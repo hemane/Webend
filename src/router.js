@@ -1,8 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
+import Days from './views/Days'
 import Sports from "./views/Sports";
-import Login from "./views/Login";
+import Sport from "./views/Sport";
+import Clubs from "./views/Clubs";
+import Club from "./views/Club";
+import Day from "./views/Day";
+import Match from "./views/Match";
 
 Vue.use(Router)
 
@@ -13,7 +17,7 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Days
     },
     {
       path: '/about',
@@ -29,9 +33,32 @@ export default new Router({
       component: Sports
     },
     {
-      path: '/login',
-      name: 'login',
-      component: Login
+      path: '/sport/:id',
+      name: 'sport',
+      component: Sport,
+      props: true
+    },
+    {
+      path: '/clubs',
+      name: 'clubs',
+      component: Clubs
+    },
+    {
+      path: '/club/:id',
+      name: 'club',
+      component: Club,
+      props: true
+    },
+    {
+      path: '/day',
+      name: 'day',
+      component: Day
+    },
+    {
+      path: '/match/:id',
+      name: 'match',
+      component: Match,
+      props: true
     }
   ]
 })

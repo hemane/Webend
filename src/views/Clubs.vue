@@ -1,10 +1,10 @@
 <template>
-    <b-card header="Sportarten" header-tag="h1">
-        <b-table striped hover :items="sports" :fields="fields" show-empty v-if="current == null">
+    <b-card header="Vereine" header-tag="h1">
+        <b-table striped hover :items="clubs" :fields="fields" show-empty v-if="current == null">
             <template slot="aktion" slot-scope="data">
                 <b-button-group size="sm">
                     <b-button @click="edit(data.item)">Bearbeiten</b-button>
-                    <b-button @click="open(data.item)">Ligen</b-button>
+                    <b-button @click="open(data.item)">Mannschaften</b-button>
                 </b-button-group>
             </template>
         </b-table>
@@ -25,6 +25,30 @@
                         placeholder="Bezeichnung"
                 ></b-form-input>
             </b-form-group>
+            <b-form-group
+                    id="postcode"
+                    label="Postleitzahl:"
+                    label-for="input-postcode">
+                <b-form-input
+                        id="input-postcode"
+                        v-model="current.postcode"
+                        type="text"
+                        required
+                        placeholder="Postleitzahl"
+                ></b-form-input>
+            </b-form-group>
+            <b-form-group
+                    id="city"
+                    label="Stadt:"
+                    label-for="input-city">
+                <b-form-input
+                        id="input-city"
+                        v-model="current.city"
+                        type="text"
+                        required
+                        placeholder="Stadt"
+                ></b-form-input>
+            </b-form-group>
 
             <b-button-group>
                 <b-button variant="danger" @click="clean">Verwerfen</b-button>
@@ -40,10 +64,12 @@
         },
         data: function() {
             return {
-                sports: [],
+                clubs: [],
                 fields: {
                     "id": "#",
                     "name": "Name",
+                    "postcode": "Plz",
+                    "city": "Stadt",
                     "aktion": "Aktion"
                 },
                 current: null,
@@ -59,23 +85,24 @@
         },
         methods: {
             readOnly() {
-                return this.authBucket.group != 0
+                return this.authBucket.group !== 0
             },
             load() {
-                this.sports = [];
+                this.clubs = [];
                 this.current = null;
                 this.lastState = null;
 
-                this.sports = this.$axios().get("/sports")
-                    .then(j => this.sports = j.data);
+                this.clubs = this.$axios().get("/clubs")
+                    .then(j => this.clubs = j.data);
+            },
+            open(p) {
+                this.$router.push({name: 'club', params: { id: p.id}});
+
             },
             edit(p) {
                 if(this.readOnly()) return;
 
                 this.startEditMode(p);
-            },
-            open(p) {
-                this.$router.push({name: 'sport', params: { id: p.id}});
             },
             create() {
                 if(this.readOnly()) return;
@@ -97,13 +124,14 @@
             copyTo(s, t) {
                 t.id = s.id;
                 t.name = s.name;
+                t.postcode = s.postcode;
+                t.city = s.city;
             },
             save() {
-                //TODO: Unmock
                 let c = this.current;
                 this.current = null;
 
-                this.$axios().post("/sports", c)
+                this.$axios().put("/clubs", c)
                     .then(() => this.load());
             },
             clean() {
